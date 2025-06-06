@@ -12,7 +12,7 @@ interface Client {
   status: 'ATIVO' | 'INATIVO';
 }
 
-// URL da API Backend
+// URL da sua API Backend (verifique se a porta do seu backend é 3333)
 const API_URL = 'http://localhost:3333/api/v1/clients';
 
 export default function ClientsPage() {
@@ -42,9 +42,12 @@ export default function ClientsPage() {
     if (!window.confirm('Tem certeza que deseja deletar este cliente?')) return;
 
     try {
-      await axios.delete(`<span class="math-inline">\{API\_URL\}/</span>{clientId}`);
-      // Atualiza a lista removendo o cliente deletado, para a UI refletir a mudança
-      setClients(clients.filter(client => client.id !== clientId));
+      
+      await axios.delete(`${API_URL}/${clientId}`);
+      
+      alert('Cliente deletado com sucesso!');
+      fetchClients(); // Recarrega a lista para atualizar a tela
+
     } catch (err) {
       alert('Falha ao deletar o cliente.');
       console.error(err);
@@ -71,12 +74,19 @@ export default function ClientsPage() {
                   <p className="font-semibold text-gray-900">{client.name}</p>
                   <p className="text-sm text-gray-500">{client.email}</p>
                 </div>
-                <div className="flex items-center space-x-4">
+                
+                <div className="flex items-center space-x-2">
                   <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
                       client.status === 'ATIVO' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                   }`}>
                     {client.status}
                   </span>
+                  
+                  
+                  <Link href={`/clients/edit/${client.id}`}>
+                    <Button variant="outline" size="sm">Editar</Button>
+                  </Link>
+
                   <Button variant="destructive" size="sm" onClick={() => handleDelete(client.id)}>
                     Deletar
                   </Button>
