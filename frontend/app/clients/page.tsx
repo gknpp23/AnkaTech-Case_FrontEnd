@@ -38,15 +38,21 @@ export default function ClientsPage() {
     fetchClients();
   }, []);
 
+  // 1. FUNÇÃO PARA DELETAR O CLIENTE
   const handleDelete = async (clientId: number) => {
-    if (!window.confirm('Tem certeza que deseja deletar este cliente?')) return;
+    // Pede uma confirmação simples antes de prosseguir
+    if (!window.confirm('Tem certeza que deseja deletar este cliente?')) {
+      return;
+    }
 
     try {
-      
+      // Envia a requisição DELETE para a API
       await axios.delete(`${API_URL}/${clientId}`);
       
+      // Atualiza o estado local para remover o cliente da lista na tela
+      setClients(clients.filter(client => client.id !== clientId));
+
       alert('Cliente deletado com sucesso!');
-      fetchClients(); // Recarrega a lista para atualizar a tela
 
     } catch (err) {
       alert('Falha ao deletar o cliente.');
@@ -82,11 +88,11 @@ export default function ClientsPage() {
                     {client.status}
                   </span>
                   
-                  
                   <Link href={`/clients/edit/${client.id}`}>
                     <Button variant="outline" size="sm">Editar</Button>
                   </Link>
 
+                  {/* 2. CONECTANDO A FUNÇÃO AO BOTÃO */}
                   <Button variant="destructive" size="sm" onClick={() => handleDelete(client.id)}>
                     Deletar
                   </Button>

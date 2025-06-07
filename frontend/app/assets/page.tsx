@@ -43,7 +43,7 @@ export default function AssetsPage() {
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold">Ativos Financeiros</h1>
         <p className="text-md text-gray-500 mt-2">
-          Esta é uma lista de ativos com valores estáticos para visualização (somente leitura). 
+          Esta é uma lista de ativos com valores estáticos para visualização (somente leitura).
         </p>
       </div>
 
