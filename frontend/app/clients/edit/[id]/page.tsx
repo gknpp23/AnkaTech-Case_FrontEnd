@@ -26,7 +26,7 @@ export default function EditClientPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 1. Busca os dados do cliente a ser editado quando a página carrega
+  // Busca os dados do cliente a ser editado quando a página carrega
   useEffect(() => {
     if (id) {
       const fetchClientData = async () => {
@@ -46,7 +46,7 @@ export default function EditClientPage() {
     }
   }, [id]);
 
-  // 2. Submete as alterações para o backend
+  // Submete as alterações para o backend
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
@@ -64,16 +64,14 @@ export default function EditClientPage() {
     }
   };
   
-  // Adicione o componente Select do ShadCN para o status
-  // No terminal: npx shadcn-ui@latest add select
-
+  
   if (isLoading) return <p className="p-4 text-center">Carregando dados do cliente...</p>;
 
   return (
     <div className="container mx-auto p-4 max-w-lg">
       <h1 className="text-2xl font-bold mb-6">Editar Cliente</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Campos de Nome e Email (iguais ao formulário de criação) */}
+        {/* Campos de Nome e Email */}
         <div className="space-y-2">
           <Label htmlFor="name">Nome</Label>
           <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required />

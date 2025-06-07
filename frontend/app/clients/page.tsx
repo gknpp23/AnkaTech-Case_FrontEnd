@@ -12,7 +12,7 @@ interface Client {
   status: 'ATIVO' | 'INATIVO';
 }
 
-// URL da sua API Backend (verifique se a porta do seu backend é 3333)
+// URL da sua API Backend
 const API_URL = 'http://localhost:3333/api/v1/clients';
 
 export default function ClientsPage() {
