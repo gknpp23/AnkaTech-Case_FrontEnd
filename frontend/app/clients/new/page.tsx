@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-// --- CORREÇÕES AQUI ---
 import { createClientFormSchema, CreateClientFormValues } from '@/app/schemas/client.schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 
 const API_URL = 'http://localhost:3333/api/v1/clients';
 
-// Função que envia os dados para a API (usando o tipo correto)
+// Função que envia os dados para a API
 const createClient = async (data: CreateClientFormValues) => {
   const response = await axios.post(API_URL, data);
   return response.data;
@@ -47,7 +46,7 @@ export default function NewClientPage() {
     },
   });
 
-  // 3. Função de submissão que conecta o formulário à mutação (usando o tipo correto)
+  // 3. Função de submissão que conecta o formulário à mutação
   function onSubmit(values: CreateClientFormValues) {
     createMutation.mutate(values);
   }

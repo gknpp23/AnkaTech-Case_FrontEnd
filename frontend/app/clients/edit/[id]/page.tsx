@@ -41,7 +41,7 @@ export default function EditClientPage() {
 
   const { data: client, isLoading, isError } = useQuery({
     queryKey: ['client', id],
-    // CORREÇÃO AQUI:
+    
     // Adicionamos uma verificação para garantir que 'id' não é undefined
     queryFn: () => {
       if (!id) {

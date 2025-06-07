@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google"; 
 import Link from "next/link";
-import Providers from './providers'; // Importe o novo provedor
+import Providers from './providers'; // Importando o novo provedor
 import "./globals.css";
 
 const geist = Geist({
