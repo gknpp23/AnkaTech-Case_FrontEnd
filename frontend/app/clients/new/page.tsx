@@ -1,74 +1,99 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+// --- CORREÇÕES AQUI ---
+import { createClientFormSchema, CreateClientFormValues } from '@/app/schemas/client.schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+
+const API_URL = 'http://localhost:3333/api/v1/clients';
+
+// Função que envia os dados para a API (usando o tipo correto)
+const createClient = async (data: CreateClientFormValues) => {
+  const response = await axios.post(API_URL, data);
+  return response.data;
+};
 
 export default function NewClientPage() {
   const router = useRouter();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
+  // 1. CORREÇÃO: Usando o schema e o tipo de CRIAÇÃO
+  const form = useForm<CreateClientFormValues>({
+    resolver: zodResolver(createClientFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+    },
+  });
 
-    try {
-      await axios.post('http://localhost:3333/api/v1/clients', { name, email });
-      router.push('/clients'); // Redireciona para a lista após sucesso
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || 'Falha ao criar cliente.';
-      setError(errorMessage);
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  // 2. Configuração da mutação (continua igual)
+  const createMutation = useMutation({
+    mutationFn: createClient,
+    onSuccess: () => {
+      alert('Cliente criado com sucesso!');
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      router.push('/clients');
+    },
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message || 'Falha ao criar cliente.';
+      alert(errorMessage);
+    },
+  });
+
+  // 3. Função de submissão que conecta o formulário à mutação (usando o tipo correto)
+  function onSubmit(values: CreateClientFormValues) {
+    createMutation.mutate(values);
+  }
 
   return (
     <div className="container mx-auto p-4 max-w-lg">
       <h1 className="text-2xl font-bold mb-6">Adicionar Novo Cliente</h1>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="name">Nome</Label>
-          <Input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            placeholder="Nome do Cliente"
+      
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nome</FormLabel>
+                <FormControl>
+                  <Input placeholder="Nome do Cliente" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="email@exemplo.com"
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="email@exemplo.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-
-        <div className="flex justify-end space-x-2 pt-4">
-          <Button type="button" variant="outline" onClick={() => router.back()}>
-            Cancelar
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Salvando...' : 'Salvar Cliente'}
-          </Button>
-        </div>
-      </form>
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button type="button" variant="outline" onClick={() => router.back()}>
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={createMutation.isPending}>
+              {createMutation.isPending ? 'Salvando...' : 'Salvar Cliente'}
+            </Button>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 }
